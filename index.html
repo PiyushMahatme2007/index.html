@@ -1,52 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ultimate Pro Tic Tac Toe</title>
+    <title>Advanced Tic Tac Toe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>🔥 Ultimate Pro Tic Tac Toe 🔥</h1>
-
-<div class="players">
-    <div class="playerBox">
-        <h2 id="p1Name">Player 1</h2>
-        <div class="timer" id="p1Timer">00</div>
+<div class="top-bar">
+    <div class="player-info">
+        <h2 id="player1Name">Player 1 (X)</h2>
+        <div id="timer1">10</div>
     </div>
 
-    <div class="playerBox">
-        <h2 id="p2Name">Player 2</h2>
-        <div class="timer" id="p2Timer">00</div>
+    <div class="player-info">
+        <h2 id="player2Name">Player 2 (O)</h2>
+        <div id="timer2">10</div>
     </div>
 </div>
 
-<div class="setup">
-    <input type="text" id="player1Input" placeholder="Player 1 Name">
-    <input type="text" id="player2Input" placeholder="Player 2 Name">
-
-    <select id="firstTurn">
-        <option value="1">Player 1 First</option>
-        <option value="2">Player 2 First</option>
-    </select>
-
-    <button class="bigBtn" onclick="startGame()">Start Game</button>
-</div>
-
-<div class="game">
-    <div class="cell" data-index="0"></div>
-    <div class="cell" data-index="1"></div>
-    <div class="cell" data-index="2"></div>
-    <div class="cell" data-index="3"></div>
-    <div class="cell" data-index="4"></div>
-    <div class="cell" data-index="5"></div>
-    <div class="cell" data-index="6"></div>
-    <div class="cell" data-index="7"></div>
-    <div class="cell" data-index="8"></div>
-</div>
-
-<h2 id="status"></h2>
+<div class="board" id="board"></div>
 
 <div class="controls">
+    <button onclick="undoMove()">Back Move</button>
     <button onclick="restartGame()">Restart Game</button>
 </div>
 
