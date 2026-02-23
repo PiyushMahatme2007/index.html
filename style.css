@@ -1,45 +1,81 @@
 body{
+    margin:0;
+    background:black;
+    color:white;
     text-align:center;
     font-family:Arial;
-    background:#111;
-    color:white;
 }
 
-.top-bar{
+.players{
     display:flex;
     justify-content:space-between;
     padding:20px;
 }
 
-.player-info{
+.playerBox{
     width:40%;
 }
 
-#timer1,#timer2{
+.timer{
     font-size:30px;
     color:yellow;
 }
 
-.board{
-    width:360px;
-    height:360px;
-    margin:20px auto;
+.setup{
+    margin:20px;
+}
+
+input, select{
+    padding:10px;
+    font-size:16px;
+    margin:5px;
+}
+
+.bigBtn{
+    display:block;
+    margin:15px auto;
+    padding:15px 40px;
+    font-size:20px;
+}
+
+.game{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:5px;
+    grid-template-columns:repeat(3,150px);
+    gap:15px;
+    justify-content:center;
+    margin-top:20px;
 }
 
 .cell{
+    width:150px;
+    height:150px;
     background:#222;
     font-size:60px;
     display:flex;
     justify-content:center;
     align-items:center;
+    border-radius:15px;
     cursor:pointer;
 }
 
-button{
-    padding:10px 20px;
+.player1Mark{ color:red; }
+.player2Mark{ color:white; }
+
+.win{
+    animation: glow 0.5s infinite alternate;
+}
+
+@keyframes glow{
+    from{ box-shadow:0 0 10px gold; }
+    to{ box-shadow:0 0 40px red; }
+}
+
+.controls{
+    margin-top:20px;
+}
+
+.controls button{
+    padding:12px 25px;
     margin:10px;
     font-size:18px;
 }
