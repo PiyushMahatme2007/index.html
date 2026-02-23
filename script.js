@@ -1,50 +1,18 @@
 const cells = document.querySelectorAll('.cell');
 const statusText = document.getElementById('status');
 
-let currentPlayer = "X";
 let board = ["", "", "", "", "", "", "", "", ""];
-let gameActive = true;
+let gameActive = false;
 
-let xMoves = [];
-let oMoves = [];
+let player1Name = "";
+let player2Name = "";
+let currentPlayer = 1;
 
-const tapSound = new Audio("https://www.soundjay.com/buttons/sounds/button-16.mp3");
+let player1Moves = [];
+let player2Moves = [];
 
-cells.forEach(cell => cell.addEventListener("click", cellClicked));
-
-function cellClicked() {
-    const index = this.getAttribute("data-index");
-
-    if (!gameActive || board[index] !== "") return;
-
-    tapSound.play();
-
-    board[index] = currentPlayer;
-    this.innerText = currentPlayer;
-    this.classList.add(currentPlayer.toLowerCase());
-
-    if (currentPlayer === "X") {
-        xMoves.push(index);
-        if (xMoves.length > 3) {
-            const removeIndex = xMoves.shift();
-            removeMark(removeIndex);
-        }
-    } else {
-        oMoves.push(index);
-        if (oMoves.length > 3) {
-            const removeIndex = oMoves.shift();
-            removeMark(removeIndex);
-        }
-    }
-
-    checkWinner();
-}
-
-function removeMark(index) {
-    board[index] = "";
-    cells[index].innerText = "";
-    cells[index].classList.remove("x", "o");
-}
+const tapSound = new Audio("https://www.soundjay.com/buttons/sounds/button-09.mp3");
+const winSound = new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
 
 const winningConditions = [
     [0,1,2],[3,4,5],[6,7,8],
@@ -52,29 +20,96 @@ const winningConditions = [
     [0,4,8],[2,4,6]
 ];
 
-function checkWinner() {
-    for (let condition of winningConditions) {
-        const [a, b, c] = condition;
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-            statusText.innerText = currentPlayer + " Wins! 🎉";
-            gameActive = false;
-            return;
+function startGame() {
+    player1Name = document.getElementById("player1").value.trim();
+    player2Name = document.getElementById("player2").value.trim();
+
+    const firstTurn = document.getElementById("firstTurn").value;
+    currentPlayer = parseInt(firstTurn);
+
+    if (player1Name === "") player1Name = "X";
+    if (player2Name === "") player2Name = "O";
+
+    statusText.innerText = player1Name + " vs " + player2Name + " | " +
+        (currentPlayer === 1 ? player1Name : player2Name) + "'s Turn";
+
+    gameActive = true;
+}
+
+cells.forEach(cell => cell.addEventListener("click", cellClicked));
+
+function cellClicked() {
+    if (!gameActive) return;
+
+    const index = this.getAttribute("data-index");
+    if (board[index] !== "") return;
+
+    tapSound.play();
+
+    let mark = currentPlayer === 1 
+        ? player1Name.charAt(0).toUpperCase() 
+        : player2Name.charAt(0).toUpperCase();
+
+    board[index] = mark;
+    this.innerText = mark;
+    this.classList.add(currentPlayer === 1 ? "player1" : "player2");
+
+    if (currentPlayer === 1) {
+        player1Moves.push(index);
+        if (player1Moves.length > 3) {
+            removeOldMove(player1Moves.shift());
+        }
+    } else {
+        player2Moves.push(index);
+        if (player2Moves.length > 3) {
+            removeOldMove(player2Moves.shift());
         }
     }
 
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-    statusText.innerText = currentPlayer + "'s Turn";
+    if (checkWinner()) return;
+
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+
+    statusText.innerText = 
+        (currentPlayer === 1 ? player1Name : player2Name) + "'s Turn";
+}
+
+function removeOldMove(index) {
+    board[index] = "";
+    cells[index].innerText = "";
+    cells[index].classList.remove("player1", "player2", "win");
+}
+
+function checkWinner() {
+    for (let condition of winningConditions) {
+        const [a,b,c] = condition;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+
+            cells[a].classList.add("win");
+            cells[b].classList.add("win");
+            cells[c].classList.add("win");
+
+            winSound.play();
+            statusText.innerText = 
+                (currentPlayer === 1 ? player1Name : player2Name) + " Wins! 🎉";
+
+            gameActive = false;
+            return true;
+        }
+    }
+    return false;
 }
 
 function restartGame() {
-    board = ["", "", "", "", "", "", "", "", ""];
-    xMoves = [];
-    oMoves = [];
-    gameActive = true;
-    currentPlayer = "X";
-    statusText.innerText = "";
+    board = ["","","","","","","","",""];
+    player1Moves = [];
+    player2Moves = [];
+    gameActive = false;
+
     cells.forEach(cell => {
         cell.innerText = "";
-        cell.classList.remove("x", "o");
+        cell.classList.remove("player1","player2","win");
     });
+
+    statusText.innerText = "Press Start Game";
 }
