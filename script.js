@@ -4,9 +4,7 @@ const statusText = document.getElementById("status");
 let board = ["","","","","","","","",""];
 let currentPlayer = 1;
 let gameActive = false;
-let moveHistory = [];
 let timerInterval;
-let moveCount = 0;
 
 let p1Name = "Player 1";
 let p2Name = "Player 2";
@@ -26,7 +24,7 @@ function startGame(){
 
     currentPlayer = parseInt(document.getElementById("firstTurn").value);
     gameActive = true;
-    moveCount = 0;
+
     startTimer();
 }
 
@@ -50,26 +48,20 @@ cells.forEach(cell => {
         this.innerText = mark;
         this.classList.add(currentPlayer === 1 ? "player1Mark" : "player2Mark");
 
-        // ===== 3 MOVE ROTATION FIX =====
+        // 3 Move Rotation Rule
         if(currentPlayer === 1){
             p1Moves.push(index);
-
             if(p1Moves.length > 3){
                 let removeIndex = p1Moves.shift();
                 clearCell(removeIndex);
             }
         } else {
             p2Moves.push(index);
-
             if(p2Moves.length > 3){
                 let removeIndex = p2Moves.shift();
                 clearCell(removeIndex);
             }
         }
-        // =================================
-
-        moveHistory.push({index, player: currentPlayer});
-        moveCount++;
 
         if(checkWinner()){
             winSound.play();
@@ -97,7 +89,7 @@ function switchPlayer(){
 function startTimer(){
     clearInterval(timerInterval);
 
-    let time = (moveCount < 2) ? 3 : 4;
+    let time = 10;   // ✅ Timer now 10 seconds
 
     updateTimerDisplay(time);
 
@@ -145,28 +137,8 @@ function checkWinner(){
     return false;
 }
 
-function undoMove(){
-    if(moveHistory.length === 0 || !gameActive) return;
-
-    let last = moveHistory.pop();
-
-    clearCell(last.index);
-
-    if(last.player === 1){
-        p1Moves = p1Moves.filter(i => i !== last.index);
-    } else {
-        p2Moves = p2Moves.filter(i => i !== last.index);
-    }
-
-    currentPlayer = last.player;
-    moveCount--;
-    startTimer();
-}
-
 function restartGame(){
     board = ["","","","","","","","",""];
-    moveHistory = [];
-    moveCount = 0;
     p1Moves = [];
     p2Moves = [];
     gameActive = false;
@@ -180,4 +152,4 @@ function restartGame(){
     document.getElementById("p1Timer").innerText = "00";
     document.getElementById("p2Timer").innerText = "00";
     statusText.innerText = "Game Restarted";
-       }
+                                }
