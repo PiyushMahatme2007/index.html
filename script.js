@@ -11,6 +11,9 @@ let moveCount=0;
 let p1Name="Player 1";
 let p2Name="Player 2";
 
+let p1Moves=[];
+let p2Moves=[];
+
 const tapSound=new Audio("https://www.soundjay.com/buttons/sounds/button-09.mp3");
 const winSound=new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3");
 
@@ -36,11 +39,29 @@ cells.forEach(cell=>cell.addEventListener("click",function(){
     tapSound.currentTime=0;
     tapSound.play();
 
-    let mark=currentPlayer==1?p1Name.charAt(0).toUpperCase():p2Name.charAt(0).toUpperCase();
+    let mark=currentPlayer==1?
+        p1Name.charAt(0).toUpperCase():
+        p2Name.charAt(0).toUpperCase();
 
     board[index]=mark;
     this.innerText=mark;
     this.classList.add(currentPlayer==1?"player1Mark":"player2Mark");
+
+    // ---- 3 MOVE LIMIT LOGIC ----
+    if(currentPlayer==1){
+        p1Moves.push(index);
+        if(p1Moves.length>3){
+            let removeIndex=p1Moves.shift();
+            removeBlock(removeIndex);
+        }
+    }else{
+        p2Moves.push(index);
+        if(p2Moves.length>3){
+            let removeIndex=p2Moves.shift();
+            removeBlock(removeIndex);
+        }
+    }
+    // -----------------------------
 
     moveHistory.push({index:index,player:currentPlayer});
     moveCount++;
@@ -55,6 +76,12 @@ cells.forEach(cell=>cell.addEventListener("click",function(){
 
     switchPlayer();
 }));
+
+function removeBlock(index){
+    board[index]="";
+    cells[index].innerText="";
+    cells[index].classList.remove("player1Mark","player2Mark","win");
+}
 
 function switchPlayer(){
     currentPlayer=currentPlayer==1?2:1;
@@ -112,6 +139,12 @@ function undoMove(){
     cells[last.index].innerText="";
     cells[last.index].classList.remove("player1Mark","player2Mark","win");
 
+    if(last.player==1){
+        p1Moves.pop();
+    }else{
+        p2Moves.pop();
+    }
+
     currentPlayer=last.player;
     moveCount--;
     startTimer();
@@ -121,6 +154,8 @@ function restartGame(){
     board=["","","","","","","","",""];
     moveHistory=[];
     moveCount=0;
+    p1Moves=[];
+    p2Moves=[];
     gameActive=false;
     clearInterval(timerInterval);
 
