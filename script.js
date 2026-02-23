@@ -2,8 +2,8 @@ let board = document.getElementById("board");
 let currentPlayer = "X";
 let gameState = ["","","","","","","","",""];
 let moveHistory = [];
-let timer;
-let timeLeft = 10;
+let timer = null;
+let timeLeft = 10;   // HAR TURN 10 SECOND
 
 function createBoard(){
     board.innerHTML="";
@@ -22,6 +22,7 @@ function makeMove(index){
     gameState[index]=currentPlayer;
     moveHistory.push(index);
 
+    // 4th turn ke baad oldest remove
     if(moveHistory.length>6){
         let removeIndex = moveHistory.shift();
         gameState[removeIndex]="";
@@ -30,6 +31,7 @@ function makeMove(index){
     createBoard();
 
     if(checkWinner()){
+        clearInterval(timer);
         alert(currentPlayer+" Wins!");
         restartGame();
         return;
@@ -40,30 +42,32 @@ function makeMove(index){
 
 function switchPlayer(){
     currentPlayer = currentPlayer==="X"?"O":"X";
-    resetTimer();
+    startTimer();  // har turn pe timer restart
 }
 
-function resetTimer(){
+function startTimer(){
     clearInterval(timer);
-    timeLeft = 10;
+    timeLeft = 10;   // YAHI FIXED 10 SECOND
 
     timer = setInterval(()=>{
+
         if(currentPlayer==="X"){
-            document.getElementById("timer1").innerText=timeLeft;
-            document.getElementById("timer2").innerText=0;
+            document.getElementById("timer1").innerText = timeLeft;
+            document.getElementById("timer2").innerText = "";
         }else{
-            document.getElementById("timer2").innerText=timeLeft;
-            document.getElementById("timer1").innerText=0;
+            document.getElementById("timer2").innerText = timeLeft;
+            document.getElementById("timer1").innerText = "";
         }
 
-        if(timeLeft<=0){
+        timeLeft--;
+
+        if(timeLeft < 0){
             clearInterval(timer);
             let winner = currentPlayer==="X"?"O":"X";
             alert("Time Over! "+winner+" Wins!");
             restartGame();
         }
 
-        timeLeft--;
     },1000);
 }
 
@@ -77,14 +81,14 @@ function undoMove(){
 }
 
 function restartGame(){
+    clearInterval(timer);
     gameState=["","","","","","","","",""];
     moveHistory=[];
     currentPlayer="X";
-    clearInterval(timer);
     document.getElementById("timer1").innerText=10;
     document.getElementById("timer2").innerText=10;
     createBoard();
-    resetTimer();
+    startTimer();
 }
 
 function checkWinner(){
@@ -102,4 +106,4 @@ function checkWinner(){
 }
 
 createBoard();
-resetTimer();
+startTimer();
