@@ -17,8 +17,9 @@ body{
 }
 
 .timer{
-    font-size:30px;
+    font-size:35px;
     color:yellow;
+    font-weight:bold;
 }
 
 .setup{
