@@ -1,26 +1,42 @@
-let board = document.getElementById("board");
-
+let board;
 let currentPlayer = "X";
-let gameState = ["","","","","","","","",""];
-let moveHistory = [];
+let gameState;
+let moveHistory;
+let timerInterval;
+let timeLeft;
 
-let timerInterval = null;
-let timeLeft = 10;   // HAR TURN FIXED 10 SECOND
+window.onload = function(){
+    board = document.getElementById("board");
+};
 
-// ================= CREATE BOARD =================
+function startGame(){
+
+    gameState = ["","","","","","","","",""];
+    moveHistory = [];
+    currentPlayer = "X";
+    timeLeft = 10;
+
+    createBoard();
+    startTimer();
+}
+
 function createBoard(){
     board.innerHTML = "";
 
     gameState.forEach((cell, index) => {
+
         let div = document.createElement("div");
         div.classList.add("cell");
         div.innerText = cell;
-        div.addEventListener("click", () => makeMove(index));
+
+        div.addEventListener("click", function(){
+            makeMove(index);
+        });
+
         board.appendChild(div);
     });
 }
 
-// ================= MAKE MOVE =================
 function makeMove(index){
 
     if(gameState[index] !== "") return;
@@ -39,77 +55,63 @@ function makeMove(index){
     if(checkWinner()){
         clearInterval(timerInterval);
         alert(currentPlayer + " Wins!");
-        restartGame();
         return;
     }
 
     switchPlayer();
 }
 
-// ================= SWITCH PLAYER =================
 function switchPlayer(){
     currentPlayer = currentPlayer === "X" ? "O" : "X";
     startTimer();
 }
 
-// ================= START TIMER =================
 function startTimer(){
 
     clearInterval(timerInterval);
-
-    timeLeft = 10;  // HAR TURN 10 SECOND
+    timeLeft = 10;
 
     updateTimerDisplay();
 
-    timerInterval = setInterval(() => {
+    timerInterval = setInterval(function(){
 
         timeLeft--;
         updateTimerDisplay();
 
         if(timeLeft < 0){
             clearInterval(timerInterval);
-
             let winner = currentPlayer === "X" ? "O" : "X";
             alert("Time Over! " + winner + " Wins!");
-            restartGame();
         }
 
-    }, 1000);
+    },1000);
 }
 
-// ================= UPDATE TIMER DISPLAY =================
 function updateTimerDisplay(){
 
     if(currentPlayer === "X"){
         document.getElementById("timer1").innerText = timeLeft;
         document.getElementById("timer2").innerText = "";
-    } else {
+    }else{
         document.getElementById("timer2").innerText = timeLeft;
         document.getElementById("timer1").innerText = "";
     }
 }
 
-// ================= UNDO MOVE =================
-function undoMove(){
+function checkWinner(){
 
-    if(moveHistory.length === 0) return;
+    const wins = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+    ];
 
-    clearInterval(timerInterval);
-
-    let lastIndex = moveHistory.pop();
-    gameState[lastIndex] = "";
-
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-
-    createBoard();
-    startTimer();
+    return wins.some(combo=>{
+        return combo.every(index=>{
+            return gameState[index] === currentPlayer;
+        });
+    });
 }
-
-// ================= RESTART GAME =================
-function restartGame(){
-
-    clearInterval(timerInterval);
-
     gameState = ["","","","","","","","",""];
     moveHistory = [];
     currentPlayer = "X";
